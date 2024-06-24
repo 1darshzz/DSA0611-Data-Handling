@@ -1,0 +1,48 @@
+# Create the data frame
+data <- data.frame(
+  ID = c(1, 2, 3, 4, 5),
+  Variable1 = c(0, 1, 0, 1, 0),
+  Variable2 = c(1, 0, 1, 1, 0),
+  Variable3 = c(0, 1, 1, 0, 0)
+)
+
+# 1. Create a bar plot showing the count of each value (0 or 1) for Variable1
+ggplot(data, aes(x = factor(Variable1))) +
+  geom_bar(fill = "blue", color = "black") +
+  labs(title = "Bar Plot of Variable1", x = "Value", y = "Count") +
+  scale_x_discrete(labels = c("0", "1")) +
+  theme_minimal()
+
+# 2. Generate a stacked bar plot of Variable1, Variable2, and Variable3
+data_melt <- melt(data, id.vars = "ID")
+ggplot(data_melt, aes(x = variable, fill = factor(value))) +
+  geom_bar(position = "stack") +
+  labs(title = "Stacked Bar Plot of Variables", x = "Variable", y = "Count", fill = "Value") +
+  scale_fill_manual(values = c("0" = "red", "1" = "green")) +
+  theme_minimal()
+
+# 3. Plot a pie chart representing the proportion of 0s and 1s in Variable2
+variable2_counts <- data %>%
+  count(Variable2)
+
+ggplot(variable2_counts, aes(x = "", y = n, fill = factor(Variable2))) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +
+  labs(title = "Pie Chart of Variable2", x = NULL, y = NULL, fill = "Value") +
+  scale_fill_manual(values = c("0" = "orange", "1" = "purple")) +
+  theme_void()
+
+# 4. Create a mosaic plot to visualize the association between Variable1 and Variable2
+mosaic_data <- table(data$Variable1, data$Variable2)
+mosaicplot(mosaic_data, main = "Mosaic Plot of Variable1 and Variable2",
+           xlab = "Variable1", ylab = "Variable2", color = TRUE)
+
+# 5. Plot a bar chart showing the frequency of each combination of values in Variable1 and Variable2
+combination_data <- data %>%
+  count(Variable1, Variable2)
+
+ggplot(combination_data, aes(x = interaction(Variable1, Variable2), y = n, fill = interaction(Variable1, Variable2))) +
+  geom_bar(stat = "identity") +
+  labs(title = "Bar Chart of Combinations of Variable1 and Variable2", x = "Combination", y = "Count", fill = "Combination") +
+  scale_fill_manual(values = c("0.0" = "blue", "0.1" = "green", "1.0" = "red", "1.1" = "purple")) +
+  theme_minimal()
