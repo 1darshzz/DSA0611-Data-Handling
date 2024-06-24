@@ -1,0 +1,36 @@
+# Create the data frame
+data <- data.frame(
+  ID = c(1, 2, 3, 4, 5),
+  X1 = c(5, 7, 6, 8, 4),
+  X2 = c(10, 12, 11, 9, 13),
+  X3 = c(15, 14, 13, 16, 17)
+)
+# 2. Generate a 3D scatter plot of X1, X2, and X3
+plot_ly(data, x = ~X1, y = ~X2, z = ~X3, type = 'scatter3d', mode = 'markers', marker = list(size = 5, color = ~ID, colorscale = 'Viridis')) %>%
+  layout(scene = list(xaxis = list(title = 'X1'),
+                      yaxis = list(title = 'X2'),
+                      zaxis = list(title = 'X3')),
+         title = '3D Scatter Plot of X1, X2, and X3')
+
+# 3. Plot a parallel coordinates plot of X1, X2, and X3
+data_long <- melt(data, id.vars = "ID")
+ggplot(data_long, aes(x = variable, y = value, group = ID, color = as.factor(ID))) +
+  geom_line() +
+  labs(title = "Parallel Coordinates Plot", x = "Variables", y = "Values", color = "ID") +
+  theme_minimal()
+
+# 4. Create a radar chart to compare values of X1, X2, and X3 for ID 1
+# Prepare data for radar chart
+data_radar <- rbind(rep(20, 3), rep(0, 3), data[data$ID == 1, -1])
+colnames(data_radar) <- c("X1", "X2", "X3")
+
+radarchart(data_radar, axistype = 1, 
+           pcol = rgb(0.2,0.5,0.5,0.9), pfcol = rgb(0.2,0.5,0.5,0.5), plwd = 4, 
+           cglcol = "grey", cglty = 1, axislabcol = "grey", caxislabels = seq(0,20,5), cglwd = 0.8, 
+           vlcex = 0.8)
+title(main = "Radar Chart for ID 1")
+
+# 5. Generate a heatmap showing correlations between X1, X2, and X3
+cor_matrix <- cor(data[, -1])
+heatmap(cor_matrix, main = "Correlation Heatmap", col = colorRampPalette(c("blue", "white", "red"))(20))
+
