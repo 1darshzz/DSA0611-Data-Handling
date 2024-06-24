@@ -1,0 +1,49 @@
+# Create the data frame
+data <- data.frame(
+  ID = c(1, 2, 3, 4, 5),
+  Rating = c("Good", "Excellent", "Fair", "Poor", "Good")
+)
+
+# 1. Create a bar plot showing the count of each Rating category
+ggplot(data, aes(x = Rating)) +
+  geom_bar(fill = "blue", color = "black") +
+  labs(title = "Bar Plot of Rating Categories", x = "Rating", y = "Count") +
+  theme_minimal()
+
+# 2. Generate a stacked bar plot of Rating over IDs
+ggplot(data, aes(x = factor(ID), fill = Rating)) +
+  geom_bar(stat = "count") +
+  labs(title = "Stacked Bar Plot of Ratings over IDs", x = "ID", y = "Count") +
+  theme_minimal()
+
+# 3. Plot a pie chart representing the distribution of Ratings
+rating_counts <- data %>%
+  count(Rating)
+
+ggplot(rating_counts, aes(x = "", y = n, fill = Rating)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +
+  labs(title = "Pie Chart of Rating Distribution", x = NULL, y = NULL, fill = "Rating") +
+  theme_void()
+
+# 4. Create a lollipop plot showing the average Rating
+# Converting Rating to an ordered factor for numeric conversion
+data$Rating <- factor(data$Rating, levels = c("Poor", "Fair", "Good", "Excellent"), ordered = TRUE)
+data$Rating_num <- as.numeric(data$Rating)
+
+avg_rating <- data %>%
+  summarize(Average_Rating = mean(Rating_num))
+
+ggplot(avg_rating, aes(x = 1, y = Average_Rating)) +
+  geom_point(size = 5, color = "red") +
+  geom_segment(aes(x = 1, xend = 1, y = 0, yend = Average_Rating), color = "red") +
+  labs(title = "Lollipop Plot of Average Rating", x = NULL, y = "Average Rating") +
+  scale_y_continuous(breaks = 1:4, labels = levels(data$Rating)) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+
+# 5. Plot a bar chart showing the frequency of each Rating category
+ggplot(rating_counts, aes(x = Rating, y = n, fill = Rating)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Bar Chart of Rating Frequencies", x = "Rating", y = "Count") +
+  theme_minimal()
